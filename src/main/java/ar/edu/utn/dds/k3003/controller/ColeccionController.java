@@ -1,5 +1,6 @@
 package ar.edu.utn.dds.k3003.controller;
 
+import ar.edu.utn.dds.k3003.app.Fachada;
 import ar.edu.utn.dds.k3003.facades.FachadaFuente;
 import ar.edu.utn.dds.k3003.facades.dtos.ColeccionDTO;
 import ar.edu.utn.dds.k3003.facades.dtos.HechoDTO;
@@ -14,13 +15,18 @@ import java.util.List;
 @RestController
 public class ColeccionController {
 
-    private final FachadaFuente fachada;
+    private final Fachada fachada;
     private final JpaHechoRepository hechos;
 
     @Autowired
-    public ColeccionController(FachadaFuente fachada, JpaHechoRepository hechos) {
+    public ColeccionController(Fachada fachada, JpaHechoRepository hechos) {
         this.fachada = fachada;
         this.hechos = hechos;
+    }
+
+    @DeleteMapping("/todo")
+    public ResponseEntity<String> borrarTodo() {
+        return ResponseEntity.ok(fachada.borrarTodo());
     }
 
     @GetMapping("/colecciones")

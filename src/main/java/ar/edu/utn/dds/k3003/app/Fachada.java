@@ -22,11 +22,11 @@ import java.util.stream.Collectors;
 
 @Service
 @Transactional
-public class Fachada implements FachadaFuente {
+public class Fachada {
   private JpaColeccionRepository colecciones;
   private JpaHechoRepository hechos;
   private FachadaProcesadorPdI procesadorPdI;
- @Autowired // así spring usa este constructor y no el vacío del Evaluador
+  @Autowired // así spring usa este constructor y no el vacío del Evaluador
   public Fachada(JpaColeccionRepository colecciones, JpaHechoRepository hechos) {
     this.colecciones = colecciones;
     this.hechos = hechos;
@@ -49,7 +49,6 @@ public class Fachada implements FachadaFuente {
   }
   //Colecciones
 
-    @Override
     @Transactional
     public ColeccionDTO agregar(ColeccionDTO dto) {
         boolean yaExiste = colecciones.findById(dto.nombre()).isPresent();
@@ -64,23 +63,40 @@ public class Fachada implements FachadaFuente {
         Coleccion guardada = colecciones.save(c);
         return new ColeccionDTO(guardada.getNombre(), guardada.getDescripcion());
     }
+  public String borrarTodo() {
+    hechos.deleteAllInBatch();
+    colecciones.deleteAllInBatch();
+    return "borrados todos los hechos y colecciones";
+  }
 
-  @Override
   public ColeccionDTO buscarColeccionXId(String coleccionId) throws NoSuchElementException {
     Coleccion col = colecciones.findById(coleccionId)
             .orElseThrow(() -> new NoSuchElementException("No existe la colección: " + coleccionId));
     return new ColeccionDTO(col.getNombre(), col.getDescripcion());
   }
 
-  @Override
   public List<ColeccionDTO> colecciones() {
     return colecciones.findAll().stream()
             .map(c -> new ColeccionDTO(c.getNombre(), c.getDescripcion()))
             .toList();
   }
 
+  public List<HechoDTO> hechos() {
+    return hechos.findAll().stream()
+            .map(c -> new HechoDTO(
+                                  c.getId(),
+                                  c.getColeccionId(),
+                                  c.getTitulo(),
+                                  c.getEtiquetas(),
+                                  c.getCategoria(),
+                                  c.getUbicacion(),
+                                  c.getFecha(),
+                                  c.getOrigen()
+                   ))
+            .toList();
+  }
+
   //Métodos para Hechos
-  @Override
   @Transactional
   public HechoDTO agregar(HechoDTO hechoDTO) {
     String coleccionId = hechoDTO.nombreColeccion();
@@ -114,7 +130,6 @@ public class Fachada implements FachadaFuente {
   }
 
 
-  @Override
   public HechoDTO buscarHechoXId(String hechoId) throws NoSuchElementException {
       Hecho h = hechos.findById(hechoId)
               .orElseThrow(NoSuchElementException::new);
@@ -130,7 +145,6 @@ public class Fachada implements FachadaFuente {
     );
   }
 
-  @Override
   public List<HechoDTO> buscarHechosXColeccion(String ColeccionId) throws NoSuchElementException {
     if (colecciones.findById(ColeccionId).isEmpty()) {
       throw new NoSuchElementException("No existe la colección: " + ColeccionId);
@@ -162,12 +176,10 @@ public class Fachada implements FachadaFuente {
 
   //PdI
 
-  @Override
   public void setProcesadorPdI(FachadaProcesadorPdI procesador) {
     this.procesadorPdI = procesador;
   }
 
-  @Override
   public PdIDTO agregar(PdIDTO pdIDTO) throws IllegalStateException {
     if (this.procesadorPdI == null) {
       throw new IllegalStateException("No se ha configurado el ProcesadorPdI.");

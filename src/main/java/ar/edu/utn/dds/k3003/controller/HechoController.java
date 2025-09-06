@@ -1,19 +1,20 @@
 package ar.edu.utn.dds.k3003.controller;
 
-import ar.edu.utn.dds.k3003.facades.FachadaFuente;
+import ar.edu.utn.dds.k3003.app.Fachada;
 import ar.edu.utn.dds.k3003.facades.dtos.HechoDTO;
 import ar.edu.utn.dds.k3003.model.Hecho;
 import ar.edu.utn.dds.k3003.repository.JpaHechoRepository;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import java.util.List;
 
 @RestController
 public class HechoController {
 
-    private final FachadaFuente fachada;
+    private final Fachada fachada;
     private final JpaHechoRepository hechos;
 
-    public HechoController(FachadaFuente fachada, JpaHechoRepository hechos) {
+    public HechoController(Fachada fachada, JpaHechoRepository hechos) {
         this.fachada = fachada;
         this.hechos = hechos;
     }
@@ -27,6 +28,12 @@ public class HechoController {
     @GetMapping("/hechos/{id}")
     public ResponseEntity<HechoDTO> obtener(@PathVariable String id) {
         HechoDTO dto = fachada.buscarHechoXId(id);
+        return ResponseEntity.ok(dto);
+    }
+
+    @GetMapping("/hechos")
+    public ResponseEntity<List<HechoDTO>> obtenerHechos() {
+        var dto = fachada.hechos();
         return ResponseEntity.ok(dto);
     }
 
