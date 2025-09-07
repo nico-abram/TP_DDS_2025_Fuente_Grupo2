@@ -26,9 +26,6 @@ public class Hecho {
 
     private boolean censurado;
 
-    @Transient
-    private final List<PdI> pdis;
-
     @Column(nullable = false)
     private String estado = "activo"; //para PATCH, y es interno
 
@@ -48,7 +45,6 @@ public class Hecho {
     public boolean estaBorrado() { return "borrado".equalsIgnoreCase(estado); }
 
     public Hecho() {
-        this.pdis = new ArrayList<>();
     }
     public Hecho(String id, String coleccionId, String titulo, String descripcion) {
         if (coleccionId == null || coleccionId.isBlank()) {
@@ -63,25 +59,16 @@ public class Hecho {
         this.descripcion = descripcion;
         this.fecha = LocalDateTime.now();
         this.censurado = false;
-        this.pdis = new ArrayList<>();
     }
 
-    public Hecho(String id, String coleccionId, String titulo, List<PdI> pdis) {
+    public Hecho(String id, String coleccionId, String titulo) {
         this.id = id;
         this.coleccionId = coleccionId;
         this.titulo = titulo;
-        this.pdis = pdis;
     }
 
     public void censurar() {
         this.censurado = true;
-    }
-
-    public void agregarPdI(PdI pdi) {
-        if (pdi == null) {
-            throw new IllegalArgumentException("No se puede agregar una PdI nula.");
-        }
-        this.pdis.add(pdi);
     }
 
     public String getId() {
@@ -106,10 +93,6 @@ public class Hecho {
 
     public LocalDateTime getFecha() {
         return fecha;
-    }
-
-    public List<PdI> getPdis() {
-        return pdis;
     }
 
     public String getOrigen() {

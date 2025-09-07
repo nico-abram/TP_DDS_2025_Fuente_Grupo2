@@ -2,6 +2,7 @@ package ar.edu.utn.dds.k3003.controller;
 
 import ar.edu.utn.dds.k3003.app.Fachada;
 import ar.edu.utn.dds.k3003.facades.dtos.HechoDTO;
+import ar.edu.utn.dds.k3003.facades.dtos.PdIDTO;
 import ar.edu.utn.dds.k3003.model.Hecho;
 import ar.edu.utn.dds.k3003.repository.JpaHechoRepository;
 import org.springframework.http.ResponseEntity;
@@ -22,6 +23,12 @@ public class HechoController {
     @PostMapping("/hechos")
     public ResponseEntity<HechoDTO> crear(@RequestBody HechoDTO body) {
         HechoDTO creado = fachada.agregar(body);
+        return ResponseEntity.ok(creado);
+    }
+
+    @PostMapping("/hechos/{hechoId}/pdis")
+    public ResponseEntity<PdIDTO> crear(@PathVariable String hechoId, @RequestBody PdIDTO body) throws java.io.IOException, IllegalStateException {
+        PdIDTO creado = fachada.agregar(new PdIDTO(body.id(), hechoId /* body.hechoId() */, body.descripcion(), body.lugar(), body.momento(), body.contenido(), body.etiquetas()));
         return ResponseEntity.ok(creado);
     }
 

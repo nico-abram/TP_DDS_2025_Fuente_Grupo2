@@ -8,6 +8,7 @@ import ar.edu.utn.dds.k3003.facades.dtos.PdIDTO;
 import ar.edu.utn.dds.k3003.model.Coleccion;
 import ar.edu.utn.dds.k3003.model.Hecho;
 import ar.edu.utn.dds.k3003.model.PdI;
+import ar.edu.utn.dds.k3003.client.ProcesadorPdiProxy;
 import ar.edu.utn.dds.k3003.repository.*;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,17 +20,19 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Service
 @Transactional
 public class Fachada {
   private JpaColeccionRepository colecciones;
   private JpaHechoRepository hechos;
-  private FachadaProcesadorPdI procesadorPdI;
+  private ProcesadorPdiProxy procesadorPdI;
   @Autowired // así spring usa este constructor y no el vacío del Evaluador
   public Fachada(JpaColeccionRepository colecciones, JpaHechoRepository hechos) {
     this.colecciones = colecciones;
     this.hechos = hechos;
+    this.procesadorPdI = new ProcesadorPdiProxy(new ObjectMapper());
   }
 
   //Para que los tests puedan usar constructor vacío y no se cacheen entre sí
@@ -46,6 +49,7 @@ public class Fachada {
                       .run();
       this.colecciones = ctx.getBean(JpaColeccionRepository.class);
       this.hechos      = ctx.getBean(JpaHechoRepository.class);
+      this.procesadorPdI = new ProcesadorPdiProxy(new ObjectMapper());
   }
   //Colecciones
 
@@ -174,13 +178,7 @@ public class Fachada {
     hechos.save(h);
   }
 
-  //PdI
-
-  public void setProcesadorPdI(FachadaProcesadorPdI procesador) {
-    this.procesadorPdI = procesador;
-  }
-
-  public PdIDTO agregar(PdIDTO pdIDTO) throws IllegalStateException {
+  public PdIDTO agregar(PdIDTO pdIDTO) throws IllegalStateException, java.io.IOException {
     if (this.procesadorPdI == null) {
       throw new IllegalStateException("No se ha configurado el ProcesadorPdI.");
     }
@@ -199,6 +197,7 @@ public class Fachada {
 
     PdIDTO resultado = procesadorPdI.procesar(pdIDTO);
 
+/*
     PdI pdiModel = new PdI(
             resultado.id(),
             hechoId,
@@ -208,6 +207,7 @@ public class Fachada {
     );
     hecho.agregarPdI(pdiModel);
     hechos.save(hecho);
+*/
 
     return resultado;
   }
