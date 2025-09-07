@@ -196,18 +196,8 @@ public class Fachada {
     }
 
     PdIDTO resultado = procesadorPdI.procesar(pdIDTO);
-
-/*
-    PdI pdiModel = new PdI(
-            resultado.id(),
-            hechoId,
-            resultado.contenido(),
-            resultado.etiquetas(),
-            true
-    );
-    hecho.agregarPdI(pdiModel);
+    hecho.agregarPdi(resultado);
     hechos.save(hecho);
-*/
 
     return resultado;
   }

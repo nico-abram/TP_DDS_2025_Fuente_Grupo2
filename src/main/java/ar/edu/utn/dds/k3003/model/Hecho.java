@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ar.edu.utn.dds.k3003.facades.dtos.CategoriaHechoEnum;
+import ar.edu.utn.dds.k3003.facades.dtos.PdIDTO;
 import jakarta.persistence.*;
 
 @Entity
@@ -34,6 +35,13 @@ public class Hecho {
     @CollectionTable(name = "hecho_etiquetas", joinColumns = @JoinColumn(name = "hecho_id"))
     @Column(name = "etiqueta")
     private List<String> etiquetas = new ArrayList<>();
+
+
+    @ElementCollection
+    @CollectionTable(name = "pdi_ids", joinColumns = @JoinColumn(name = "hecho_id"))
+    @Column(name = "pdi_id")
+    private List<String> pdiIds = new ArrayList<>();
+
 
     @Enumerated(EnumType.STRING)
     private CategoriaHechoEnum categoria;
@@ -157,5 +165,11 @@ public class Hecho {
 
     public void setFecha(LocalDateTime fecha) {
         this.fecha = fecha;
+    }
+
+    public void agregarPdi(PdIDTO pdi) {
+        this.pdiIds.add(
+            pdi.id()
+        );
     }
 }
