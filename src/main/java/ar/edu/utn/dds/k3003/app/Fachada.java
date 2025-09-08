@@ -32,7 +32,7 @@ public class Fachada {
   public Fachada(JpaColeccionRepository colecciones, JpaHechoRepository hechos) {
     this.colecciones = colecciones;
     this.hechos = hechos;
-    this.procesadorPdI = new ProcesadorPdiProxy(new ObjectMapper());
+    this.procesadorPdI = new ProcesadorPdiProxy();
   }
 
   //Para que los tests puedan usar constructor vacío y no se cacheen entre sí
@@ -49,7 +49,7 @@ public class Fachada {
                       .run();
       this.colecciones = ctx.getBean(JpaColeccionRepository.class);
       this.hechos      = ctx.getBean(JpaHechoRepository.class);
-      this.procesadorPdI = new ProcesadorPdiProxy(new ObjectMapper());
+      this.procesadorPdI = new ProcesadorPdiProxy();
   }
   //Colecciones
 
