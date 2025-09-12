@@ -172,4 +172,8 @@ public class Hecho {
             pdi.id()
         );
     }
+
+    public List<String> pdiIds() {
+        return this.pdiIds;
+    }
 }

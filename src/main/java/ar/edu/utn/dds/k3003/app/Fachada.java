@@ -1,5 +1,6 @@
 package ar.edu.utn.dds.k3003.app;
 
+import ar.edu.utn.dds.k3003.dtos.PdisDeHechoDTO;
 import ar.edu.utn.dds.k3003.facades.FachadaFuente;
 import ar.edu.utn.dds.k3003.facades.FachadaProcesadorPdI;
 import ar.edu.utn.dds.k3003.facades.dtos.ColeccionDTO;
@@ -16,8 +17,10 @@ import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.stereotype.Service;
 
+import java.util.Arrays;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.ArrayList;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -176,6 +179,22 @@ public class Fachada {
 
     h.censurar();
     hechos.save(h);
+  }
+  public List<PdisDeHechoDTO> pdisDeHecho(String idHecho) throws NoSuchElementException {
+    if (idHecho != null) {
+      Hecho h2 = hechos.findById(idHecho)
+              .orElseThrow(NoSuchElementException::new);
+      return new ArrayList<PdisDeHechoDTO>(Arrays.asList(new PdisDeHechoDTO(
+         h2.getId(),
+         h2.pdiIds()
+      )));
+    }
+    return hechos.findAll().stream()
+            .map(h -> new PdisDeHechoDTO(
+                                   h.getId(),
+                                   h.pdiIds()
+            ))
+            .toList();
   }
 
   public PdIDTO agregar(PdIDTO pdIDTO) throws IllegalStateException, java.io.IOException {

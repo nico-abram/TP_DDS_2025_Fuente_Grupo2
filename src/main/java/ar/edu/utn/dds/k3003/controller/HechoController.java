@@ -1,5 +1,6 @@
 package ar.edu.utn.dds.k3003.controller;
 
+import ar.edu.utn.dds.k3003.dtos.PdisDeHechoDTO;
 import ar.edu.utn.dds.k3003.app.Fachada;
 import ar.edu.utn.dds.k3003.facades.dtos.HechoDTO;
 import ar.edu.utn.dds.k3003.facades.dtos.PdIDTO;
@@ -8,6 +9,7 @@ import ar.edu.utn.dds.k3003.repository.JpaHechoRepository;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @RestController
 public class HechoController {
@@ -32,8 +34,14 @@ public class HechoController {
         return ResponseEntity.ok(creado);
     }
 
+    @GetMapping({"/hechos/{idHecho}/pdis", "/hechos/pdis"})
+    public ResponseEntity<List<PdisDeHechoDTO>> getPdis(@PathVariable(required = false) String idHecho) {
+        var dto = fachada.pdisDeHecho(idHecho);
+        return ResponseEntity.ok(dto);
+    }
+
     @GetMapping("/hechos/{id}")
-    public ResponseEntity<HechoDTO> obtener(@PathVariable String id) {
+    public ResponseEntity<HechoDTO> obtener(@PathVariable String id) throws NoSuchElementException {
         HechoDTO dto = fachada.buscarHechoXId(id);
         return ResponseEntity.ok(dto);
     }
