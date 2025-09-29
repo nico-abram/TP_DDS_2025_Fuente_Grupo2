@@ -1,5 +1,6 @@
 package ar.edu.utn.dds.k3003.app;
 
+import ar.edu.utn.dds.k3003.dtos.PdisDeHechoDTO;
 import ar.edu.utn.dds.k3003.facades.FachadaFuente;
 import ar.edu.utn.dds.k3003.facades.FachadaProcesadorPdI;
 import ar.edu.utn.dds.k3003.facades.dtos.ColeccionDTO;
@@ -16,8 +17,10 @@ import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.stereotype.Service;
 
+import java.util.Arrays;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.ArrayList;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -32,7 +35,7 @@ public class Fachada {
   public Fachada(JpaColeccionRepository colecciones, JpaHechoRepository hechos) {
     this.colecciones = colecciones;
     this.hechos = hechos;
-    this.procesadorPdI = new ProcesadorPdiProxy(new ObjectMapper());
+    this.procesadorPdI = new ProcesadorPdiProxy();
   }
 
   //Para que los tests puedan usar constructor vacío y no se cacheen entre sí
@@ -49,7 +52,7 @@ public class Fachada {
                       .run();
       this.colecciones = ctx.getBean(JpaColeccionRepository.class);
       this.hechos      = ctx.getBean(JpaHechoRepository.class);
-      this.procesadorPdI = new ProcesadorPdiProxy(new ObjectMapper());
+      this.procesadorPdI = new ProcesadorPdiProxy();
   }
   //Colecciones
 
@@ -97,6 +100,23 @@ public class Fachada {
                                   c.getFecha(),
                                   c.getOrigen()
                    ))
+            .toList();
+  }
+
+  public List<PdisDeHechoDTO> pdisDeHecho(String idHecho) throws NoSuchElementException {
+    if (idHecho != null) {
+      Hecho h2 = hechos.findById(idHecho)
+              .orElseThrow(NoSuchElementException::new);
+      return new ArrayList<PdisDeHechoDTO>(Arrays.asList(new PdisDeHechoDTO(
+         h2.getId(),
+         h2.pdiIds()
+      )));
+    }
+    return hechos.findAll().stream()
+            .map(h -> new PdisDeHechoDTO(
+                                   h.getId(),
+                                   h.pdiIds()
+            ))
             .toList();
   }
 
@@ -197,17 +217,12 @@ public class Fachada {
 
     PdIDTO resultado = procesadorPdI.procesar(pdIDTO);
 
-/*
-    PdI pdiModel = new PdI(
+    PdIDTO pdiModel = new PdIDTO(
             resultado.id(),
-            hechoId,
-            resultado.contenido(),
-            resultado.etiquetas(),
-            true
+            hechoId
     );
     hecho.agregarPdI(pdiModel);
     hechos.save(hecho);
-*/
 
     return resultado;
   }
