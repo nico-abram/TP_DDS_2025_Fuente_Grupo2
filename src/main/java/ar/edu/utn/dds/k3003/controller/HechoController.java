@@ -38,9 +38,7 @@ public class HechoController {
                 body.momento(),
                 body.contenido(),
                 body.urlImagen(),
-                body.etiquetas() != null ? body.etiquetas() : List.of(), // lista vacía si null
-                false,          // procesado
-                null            // fechaProcesamiento
+                body.etiquetas() != null ? body.etiquetas() : List.of() // lista vacía si null
         ));
 
         return ResponseEntity.ok(creado);
