@@ -10,7 +10,6 @@ public record PdIDTO(
         LocalDateTime momento,       // fecha del hecho
         String contenido,            // contenido textual opcional
         String urlImagen,            // nueva URL de imagen
-        String ocrResultado,         // resultado del OCR
         List<String> etiquetas,      // resultado del etiquetador
         boolean procesado,           // indica si se procesó OCR+etiquetador
         LocalDateTime fechaProcesamiento // cuándo terminó el procesamiento
@@ -18,6 +17,6 @@ public record PdIDTO(
 
     // constructor simplificado con solo id y hechoId
     public PdIDTO(String id, String hechoId) {
-        this(id, hechoId, null, null, null, null, null, null, List.of(), false, null);
+        this(id, hechoId, null, null, null, null, null, List.of(), false, null);
     }
 }

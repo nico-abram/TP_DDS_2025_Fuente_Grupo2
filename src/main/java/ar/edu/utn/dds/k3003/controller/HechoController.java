@@ -38,7 +38,6 @@ public class HechoController {
                 body.momento(),
                 body.contenido(),
                 body.urlImagen(),
-                null,           // ocrResultado
                 body.etiquetas() != null ? body.etiquetas() : List.of(), // lista vacía si null
                 false,          // procesado
                 null            // fechaProcesamiento
