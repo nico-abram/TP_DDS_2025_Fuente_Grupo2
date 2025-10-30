@@ -159,7 +159,7 @@ public class Fachada {
         tags.addAll(Arrays.asList(guardado.getTitulo().split("\\s+")));
         tags.addAll(Arrays.asList(guardado.getOrigen().split("\\s+")));
         tags.addAll(Arrays.asList(guardado.getUbicacion().split("\\s+")));
-        Document doc1 = new Document("hecho_id", guardado.getId()).append("tags", tags);
+        Document doc1 = new Document("hecho_id", guardado.getId()).append("tags", tags).append("titulo", guardado.getTitulo());
         collection.insertOne(doc1);
     }
 
