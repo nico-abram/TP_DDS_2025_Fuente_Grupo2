@@ -1,5 +1,12 @@
 package ar.edu.utn.dds.k3003.app;
 
+import static com.mongodb.client.model.Filters.eq;
+import org.bson.Document;
+import com.mongodb.client.MongoClient;
+import com.mongodb.client.MongoClients;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoDatabase;
+
 import ar.edu.utn.dds.k3003.dtos.PdisDeHechoDTO;
 import ar.edu.utn.dds.k3003.facades.FachadaFuente;
 import ar.edu.utn.dds.k3003.facades.FachadaProcesadorPdI;
@@ -17,6 +24,7 @@ import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.stereotype.Service;
 
+import java.util.Map;
 import java.util.Arrays;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -140,6 +148,20 @@ public class Fachada {
     if (hechoDTO.origen() != null) h.setOrigen(hechoDTO.origen());
 
     Hecho guardado = hechos.save(h);
+
+    // Agregar en mongodb
+    Map<String, String> env = System.getenv();
+    try (MongoClient mongoClient = MongoClients.create(env.get("MONGODB_URI"))) {
+        MongoDatabase database = mongoClient.getDatabase("busqueda_hechos");
+        MongoCollection<Document> collection = database.getCollection("busqueda_hechos");
+        List<String> tags = new ArrayList<String>();
+        tags.addAll(guardado.getEtiquetas());
+        tags.addAll(Arrays.asList(guardado.getTitulo().split("\\s+")));
+        tags.addAll(Arrays.asList(guardado.getOrigen().split("\\s+")));
+        tags.addAll(Arrays.asList(guardado.getUbicacion().split("\\s+")));
+        Document doc1 = new Document("hecho_id", guardado.getId()).append("tags", tags);
+        collection.insertOne(doc1);
+    }
 
     return new HechoDTO(
             guardado.getId(),
